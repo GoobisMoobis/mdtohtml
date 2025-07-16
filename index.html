@@ -356,6 +356,8 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML.
       let isHtmlView = false;
       let isResizing = false;
       let isMobilePreviewMode = false;
+      let initialX = 0;
+      let initialLeftWidth = 0;
       
       marked.setOptions({
         breaks: true,
@@ -370,7 +372,7 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML.
             }
           }
           return hljs.highlightAuto(code).value;
-        },
+        }
       });
       
       function isMobile() {
@@ -449,12 +451,12 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML.
           </body>
           </html>
         `;
-      
+        
         const formattedHtml = html_beautify(fullHtml, {
           indent_size: 2,
           wrap_line_length: 80,
           preserve_newlines: true,
-          max_preserve_newlines: 2,
+          max_preserve_newlines: 2
         });
       
         htmlCode.value = formattedHtml;
@@ -479,9 +481,28 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML.
         updateLineNumbers();
       }
       
+      function handleResize(e) {
+        if (!isResizing || isMobile()) return;
+        const dx = e.clientX - initialX;
+        const container = document.querySelector(".main-container");
+        const containerWidth = container.offsetWidth;
+        const minWidth = 200;
+        let newLeftWidth = initialLeftWidth + dx;
+        newLeftWidth = Math.max(minWidth, Math.min(containerWidth - minWidth - 5, newLeftWidth));
+        editorPreviewContainer.style.width = `${newLeftWidth}px`;
+        previewContainer.style.flex = "1 1 auto";
+        resizer.style.display = "block";
+      }
+      
+      function stopResize() {
+        isResizing = false;
+        document.body.style.cursor = "";
+        document.removeEventListener("mousemove", handleResize);
+        document.removeEventListener("mouseup", stopResize);
+      }
+      
       toggleHtmlBtn.addEventListener("click", function () {
         isHtmlView = !isHtmlView;
-      
         if (isHtmlView) {
           markdownInput.style.display = "none";
           htmlCode.style.display = "block";
@@ -491,16 +512,14 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML.
           htmlCode.style.display = "none";
           toggleHtmlBtn.textContent = "Show HTML";
         }
-      
         updateLineNumbers();
       });
       
       openPreviewBtn.addEventListener("click", function () {
         const html = marked.parse(markdownInput.value);
         const newTab = window.open("about:blank", "_blank");
-      
         if (newTab) {
-          newTab.document.write(`
+                    newTab.document.write(`
             <!DOCTYPE html>
             <html lang="en">
             <head>
@@ -559,30 +578,12 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML.
       
       resizer.addEventListener("mousedown", function (e) {
         isResizing = true;
+        initialX = e.clientX;
+        initialLeftWidth = editorPreviewContainer.offsetWidth;
         document.body.style.cursor = "col-resize";
+        document.addEventListener("mousemove", handleResize);
+        document.addEventListener("mouseup", stopResize);
         e.preventDefault();
-      });
-      
-      document.addEventListener("mousemove", function (e) {
-        if (!isResizing || isMobile()) return;
-      
-        const containerRect = document.querySelector(".main-container").getBoundingClientRect();
-        const containerWidth = containerRect.width;
-        const minWidth = 200;
-        
-        let newLeftWidth = e.clientX - containerRect.left;
-        newLeftWidth = Math.max(minWidth, Math.min(containerWidth - minWidth - 5, newLeftWidth));
-        
-        const leftPercentage = (newLeftWidth / containerWidth) * 100;
-        const rightPercentage = 100 - leftPercentage - (5 / containerWidth * 100);
-        
-        editorPreviewContainer.style.flex = `0 0 calc(${leftPercentage}% - 2.5px)`;
-        previewContainer.style.flex = `0 0 calc(${rightPercentage}% - 2.5px)`;
-      });
-      
-      document.addEventListener("mouseup", function () {
-        isResizing = false;
-        document.body.style.cursor = "";
       });
       
       markdownInput.addEventListener("scroll", function() {
@@ -598,12 +599,8 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML.
           e.preventDefault();
           const start = this.selectionStart;
           const end = this.selectionEnd;
-      
-          this.value =
-            this.value.substring(0, start) + "    " + this.value.substring(end);
-      
+          this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
           this.selectionStart = this.selectionEnd = start + 4;
-      
           updateLineNumbers();
           updatePreview();
         }
@@ -624,6 +621,7 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML.
         updatePreview();
         isMobilePreviewMode = false;
         updateMobileLayout();
+        resizer.style.display = "block";
       });
     </script>
   </body>
