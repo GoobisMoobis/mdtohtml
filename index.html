@@ -151,8 +151,12 @@
       }
 
       .resizer {
-        width: 5px;
+        display: block !important;
         background-color: #ccc;
+        width: 5px;
+        height: 100%;
+        position: relative;
+        z-index: 10;
         cursor: col-resize;
       }
 
@@ -353,7 +357,6 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML.
       let isResizing = false;
       let isMobilePreviewMode = false;
       
-      // Configure marked.js with highlight.js integration
       marked.setOptions({
         breaks: true,
         gfm: true,
@@ -370,12 +373,10 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML.
         },
       });
       
-      // Check if device is mobile
       function isMobile() {
         return window.innerWidth <= 768;
       }
       
-      // Update line numbers based on active textarea
       function updateLineNumbers() {
         const activeTextarea = isHtmlView ? htmlCode : markdownInput;
         const lines = activeTextarea.value.split("\n");
@@ -389,12 +390,10 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML.
         }
       }
       
-      // Sync scroll position between textarea and line numbers
       function syncScroll(textarea) {
         lineNumbers.scrollTop = textarea.scrollTop;
       }
       
-      // Update the preview with converted markdown
       function updatePreview() {
         const markdown = markdownInput.value;
         const html = marked.parse(markdown);
@@ -461,7 +460,6 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML.
         htmlCode.value = formattedHtml;
       }
       
-      // Update mobile layout between editor and preview
       function updateMobileLayout() {
         if (isMobile()) {
           if (isMobilePreviewMode) {
@@ -481,9 +479,6 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML.
         updateLineNumbers();
       }
       
-      // Event Listeners
-      
-      // Toggle between markdown and HTML view
       toggleHtmlBtn.addEventListener("click", function () {
         isHtmlView = !isHtmlView;
       
@@ -500,7 +495,6 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML.
         updateLineNumbers();
       });
       
-      // Open preview in new tab
       openPreviewBtn.addEventListener("click", function () {
         const html = marked.parse(markdownInput.value);
         const newTab = window.open("about:blank", "_blank");
@@ -558,13 +552,11 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML.
         }
       });
       
-      // Mobile toggle button
       mobileToggleBtn.addEventListener("click", function () {
         isMobilePreviewMode = !isMobilePreviewMode;
         updateMobileLayout();
       });
       
-      // Resizer functionality
       resizer.addEventListener("mousedown", function (e) {
         isResizing = true;
         document.body.style.cursor = "col-resize";
@@ -576,7 +568,7 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML.
       
         const containerRect = document.querySelector(".main-container").getBoundingClientRect();
         const containerWidth = containerRect.width;
-        const minWidth = 200; // Minimum width for each panel
+        const minWidth = 200;
         
         let newLeftWidth = e.clientX - containerRect.left;
         newLeftWidth = Math.max(minWidth, Math.min(containerWidth - minWidth - 5, newLeftWidth));
@@ -593,7 +585,6 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML.
         document.body.style.cursor = "";
       });
       
-      // Sync scrolling between textarea and line numbers
       markdownInput.addEventListener("scroll", function() {
         if (!isHtmlView) syncScroll(this);
       });
@@ -602,7 +593,6 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML.
         if (isHtmlView) syncScroll(this);
       });
       
-      // Handle tab key in textarea
       markdownInput.addEventListener("keydown", function (e) {
         if (e.key === "Tab") {
           e.preventDefault();
@@ -619,19 +609,16 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML.
         }
       });
       
-      // Update on input changes
       markdownInput.addEventListener("input", function () {
         updateLineNumbers();
         updatePreview();
       });
       
-      // Handle window resize
       window.addEventListener("resize", function () {
         updateLineNumbers();
         updateMobileLayout();
       });
       
-      // Initialize
       window.addEventListener("load", function () {
         updateLineNumbers();
         updatePreview();
