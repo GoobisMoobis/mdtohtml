@@ -299,6 +299,7 @@
       <div class="toolbar">
         <button id="toggleHtmlBtn">Toggle HTML View</button>
         <button id="openPreviewBtn">Open Preview in New Tab</button>
+        <button id="downloadBtn">Download MdToHtml app</button>
         <div class="mobile-toggle">
           <button id="mobileToggleBtn">Switch to Preview</button>
         </div>
@@ -357,6 +358,7 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML.
       const resizer = document.getElementById("resizer");
       const editorPreviewContainer = document.querySelector(".editor-preview-container");
       const previewContainer = document.querySelector(".preview-container");
+      const downloadBtn = document.querySelector(".downloadBtn");
       
       let isHtmlView = false;
       let isResizing = false;
@@ -609,6 +611,10 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML.
           updateLineNumbers();
           updatePreview();
         }
+      });
+
+      downloadBtn.addEventListener("click", function () {
+        window.open("about:blank", "_blank");
       });
       
       markdownInput.addEventListener("input", function () {
