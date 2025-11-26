@@ -437,7 +437,6 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML an
           max_preserve_newlines: 2
         });
         
-        // Update HTML editor
         htmlEditor.setValue(formattedHtml);
       }
       
@@ -445,22 +444,18 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML an
         isHtmlView = !isHtmlView;
         
         if (isHtmlView) {
-          // Show HTML editor, hide Markdown editor
           document.getElementById('markdownEditorWrapper').classList.remove('active');
           document.getElementById('htmlEditorWrapper').classList.add('active');
           toggleHtmlBtn.textContent = "Show Markdown";
           
-          // Refresh HTML editor to ensure proper rendering
           setTimeout(() => {
             htmlEditor.refresh();
           }, 10);
         } else {
-          // Show Markdown editor, hide HTML editor
           document.getElementById('htmlEditorWrapper').classList.remove('active');
           document.getElementById('markdownEditorWrapper').classList.add('active');
           toggleHtmlBtn.textContent = "Show HTML";
           
-          // Refresh Markdown editor to ensure proper rendering
           setTimeout(() => {
             markdownEditor.refresh();
           }, 10);
@@ -484,7 +479,6 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML an
           isMobilePreviewMode = false;
         }
         
-        // Refresh the active editor after layout change
         setTimeout(() => {
           if (isHtmlView) {
             htmlEditor.refresh();
@@ -501,19 +495,16 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML an
         const containerRect = container.getBoundingClientRect();
         const containerWidth = containerRect.width;
         
-        // Calculate new width based on mouse position relative to container
         const newLeftWidth = ((e.clientX - containerRect.left) / containerWidth) * 100;
         
-        // Apply constraints
-        const minWidth = 20; // 20% minimum
-        const maxWidth = 80; // 80% maximum
+        const minWidth = 20; 
+        const maxWidth = 80;
         
         const constrainedWidth = Math.max(minWidth, Math.min(maxWidth, newLeftWidth));
         
         editorPreviewContainer.style.width = `${constrainedWidth}%`;
         resizer.style.left = `${constrainedWidth}%`;
         
-        // Refresh the active editor
         setTimeout(() => {
           if (isHtmlView) {
             htmlEditor.refresh();
@@ -612,14 +603,12 @@ This is mainly meant as a tool to make site pages faster than typing raw HTML an
         updateMobileLayout();
       });
       
-      // Initialize
       window.addEventListener("load", function () {
         initializeEditors();
         updatePreview();
         isMobilePreviewMode = false;
         updateMobileLayout();
         
-        // Set initial resizer position
         const container = document.querySelector(".main-container");
         const containerRect = container.getBoundingClientRect();
         const initialWidth = editorPreviewContainer.getBoundingClientRect().width;
